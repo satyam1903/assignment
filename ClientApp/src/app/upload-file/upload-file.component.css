@@ -1,0 +1,9 @@
+.container{
+    align-content:center;
+    margin-left:400px;
+    border:solid 1px black;
+    width:350px;
+}
+.margin{
+    margin:5px;
+}

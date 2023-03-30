@@ -1,0 +1,20 @@
+<div class="container"> 
+  <form #FormData="ngForm" [formGroup]="UploadForm" (ngSubmit)="submit()">
+    <div>
+      <h1 style="text-align:center">Upload File</h1>
+    </div>
+    <div class="field">
+      <label>Developer Name</label>
+      <input type="text" ngModel formControlName="DeveloperName" class="margin">
+    </div>
+    <br>
+    <div class="field" >
+      <label>Select a File</label>
+      <input type="file" class="margin" ngModel formControlName="FilePath" (change)="onFileChange($event)" accept=".docx,.xlsx" >
+    </div>
+    <br>
+    <div style="margin-left:150px">
+      <button type="submit">Submit</button>
+    </div>
+  </form>
+</div>
