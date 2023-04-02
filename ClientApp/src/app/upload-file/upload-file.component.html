@@ -1,3 +1,8 @@
+<div class="container">
+  <a class="link" href="/"></a>
+  <a class="link" href="/showAllFiles">Show Files</a>
+</div>
+
 <div class="container"> 
   <form #FormData="ngForm" [formGroup]="UploadForm" (ngSubmit)="submit()">
     <div>
@@ -17,4 +22,8 @@
       <button type="submit">Submit</button>
     </div>
   </form>
+</div>
+<div *ngIf="viewData" class="fileData">
+  <h2>File Data in Json Format</h2>
+  <pre>{{viewData | json}}</pre>
 </div>

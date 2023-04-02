@@ -7,3 +7,10 @@
 .margin{
     margin:5px;
 }
+.fileData {
+  align-content: center;
+  margin-left: 430px;
+  margin-top: 100px;
+  background-color: aliceblue;
+  width: 350px;
+}

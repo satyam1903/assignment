@@ -7,12 +7,13 @@ using Microsoft.Extensions.Logging;
 using Server.Models;
 using Syncfusion.XlsIO;
 using System.IO;
+using System.Text.Json;
 
 namespace Server.Controllers
 {
     [ApiController]
     [Route("api[controller]")]
-    public class FileController : ControllerBase
+    public class FileController : Controller
     {
         private readonly ILogger<FileController> _logger;
 
@@ -24,30 +25,32 @@ namespace Server.Controllers
         [HttpPost("ParseFile")]
         //[ProducesResponseType(typeof(FormData), StatusCodes.Status200OK)]
         // ,string filePath, DateTime timeStamp,string timeZone
-        public IActionResult ParseFile([FromBody] FormData data)
+        public IActionResult ParseFile([FromBody] FormData data,string fileName)
         {
-            Console.WriteLine(data.Filepath);
-            string filepath=data.Filepath;
-            using (ExcelEngine excelEngine = new ExcelEngine())
-            {
-                IApplication application = excelEngine.Excel;
-                application.DefaultVersion = ExcelVersion.Xlsx;
-                FileStream fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read);
-                IWorkbook workbook = application.Workbooks.Open(fileStream);
-                IWorksheet worksheet = workbook.Worksheets[0];
+            Console.WriteLine(data.FileData[0].JobID);
+            fileName = Path.GetFileNameWithoutExtension(fileName);
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            string strJson = JsonSerializer.Serialize<FormData>(data,options);
+            Console.WriteLine(strJson);
+            System.IO.File.WriteAllText($"./shared/{fileName}.json", strJson);
 
-                //Saves the worksheet to a JSON filestream, as schema by default
-                FileStream stream = new FileStream("Excel-Worksheet-To-JSON-filestream-as-schema-default.json", FileMode.Create, FileAccess.ReadWrite);
-                workbook.SaveAsJson(stream, worksheet);
 
-                //Saves the worksheet to a JSON filestream as schema
-                //FileStream stream1 = new FileStream("Excel-Worksheet-To-JSON-filestream-as-schema.json", FileMode.Create, FileAccess.ReadWrite);
-                //workbook.SaveAsJson(stream1, worksheet, true);
 
-                stream.Dispose();
-                //stream1.Dispose();
-            }
             return Ok(data);
+        }
+
+        [HttpGet("GetJsonData")]
+ 
+        public async Task<IActionResult> GetJsonDataAsync()
+        { 
+
+            string fileName = "./Shared/output.json";
+            using FileStream openStream = System.IO.File.OpenRead(fileName);
+            FormData? JsonData =await JsonSerializer.DeserializeAsync<FormData>(openStream);
+
+            Console.WriteLine("Json data is "+JsonData);
+
+            return Ok(JsonData);
         }
     }
 }

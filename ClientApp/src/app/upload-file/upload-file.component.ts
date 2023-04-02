@@ -2,8 +2,17 @@ import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 import { HttpClient } from "@angular/common/http"
 import * as XLSX from 'xlsx';
+import { DatePipe } from '@angular/common';
 
 type AOA = any[][];
+export interface FileInformation {
+  DeveloperName: string,
+  fileData: any,
+  timeStamp: any,
+  timeZone: any,
+  userAgent: string
+}
+
 
 
 
@@ -14,14 +23,28 @@ type AOA = any[][];
 })
 export class UploadFileComponent {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+    private datepipe: DatePipe  ) { }
 
-  data: AOA = [[1, 2], [3, 4]];
+
+  UploadForm = new FormGroup({
+    DeveloperName: new FormControl(),
+    FilePath: new FormControl()
+  });
+  timeStamp: any;
+  timeZone: any;
+  userAgent: any;
+  data: AOA = [];
+  fileName!: string;
+  viewData: any;
+  FileData: AOA = [];
+ 
   wopts: XLSX.WritingOptions = { bookType: 'xlsx', type: 'array' };
-  fileName: string = 'SheetJS.xlsx';
+
 
   onFileChange(evt: any) {
     /* wire up file reader */
+     this.fileName=(evt.target.files[0].name);
     const target: DataTransfer = <DataTransfer>(evt.target);
     if (target.files.length !== 1) throw new Error('Cannot use multiple files');
     const reader: FileReader = new FileReader();
@@ -35,39 +58,61 @@ export class UploadFileComponent {
       const ws: XLSX.WorkSheet = wb.Sheets[wsname];
 
       /* save data */
-      this.data = <AOA>(XLSX.utils.sheet_to_json(ws, { header: 1 }));
-      console.log(this.data);
+      this.FileData = <AOA>(XLSX.utils.sheet_to_json(ws, { header: 1 }));
+      this.data = <AOA>(XLSX.utils.sheet_to_json(ws, { header: 2 }));
+      console.log("this is " + this.FileData);
+      var keys = this.data[0];
+
+      //vacate keys from main array
+      var newArr = this.data.slice(1, this.data.length);
+
+      var formatted = [],
+        data = newArr,
+        cols = keys;
+      for (var i = 0; i < data.length; i++) {
+        var d = data[i],
+          o = {};
+       
+        formatted.push(o);
+      }
+      console.log(JSON.stringify(this.data));
     };
     reader.readAsBinaryString(target.files[0]);
+    this.timeStamp = this.datepipe.transform((new Date), 'MM/dd/yyyy h:mm:ss');
+    this.timeZone = new Date().getTimezoneOffset();
+    this.userAgent = window.navigator.userAgent;
+    
+
   }
 
 
-  export(): void {
-    /* generate worksheet */
-    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(this.data);
-
-    /* generate workbook and add the worksheet */
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-    /* save to file */
-    XLSX.writeFile(wb, this.fileName);
-  }
 
 
-  UploadForm = new FormGroup({
-    DeveloperName: new FormControl(),
-    FilePath: new FormControl()
-  });
 
   submit() {
-    console.log(this.UploadForm.value);
-    const url = 'https://localhost:44395/apiFile/ParseFile';
+
+    let jsonData: FileInformation = {
+      DeveloperName: this.UploadForm.value.DeveloperName,
+      fileData: this.data,
+      timeStamp: this.timeStamp,
+      timeZone: this.timeZone,
+      userAgent: this.userAgent
+    }
+    
+    console.log(JSON.stringify(jsonData));
+
+    const url = (`https://localhost:44324/apiFile/ParseFile?fileName=${this.fileName}`);
+    
   
 
-    this.http.post<any>(url, this.UploadForm.value)
+    this.http.post<any>(url, jsonData)
       .subscribe(result => {
-        console.log(JSON.stringify(result));
+        console.log(result);
+      });
+    this.http.get<any>('https://localhost:44324/apiFile/GetJsonData')
+      .subscribe(result => {
+        this.viewData = result;
+        console.log(result);
       });
   }
 

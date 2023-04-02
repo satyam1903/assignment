@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ViewContentComponent } from './view-content.component';
+import { ShowFilesComponent } from './show-files.component';
 
-describe('ViewContentComponent', () => {
-  let component: ViewContentComponent;
-  let fixture: ComponentFixture<ViewContentComponent>;
+describe('ShowFilesComponent', () => {
+  let component: ShowFilesComponent;
+  let fixture: ComponentFixture<ShowFilesComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ViewContentComponent ]
+      declarations: [ ShowFilesComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ViewContentComponent);
+    fixture = TestBed.createComponent(ShowFilesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

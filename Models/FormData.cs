@@ -9,8 +9,11 @@ namespace Server.Models
     public class FormData
     {
         [Key]
-       public  string? DeveloperName { get;  set; }
-       public  string? Filepath { get; set; }
+        public string? DeveloperName { get; set; }
+        public JobDetail[] FileData { get; set; }
+        public string timeStamp { get; set; }
+        public int timeZone { get; set; }
+        public string userInfo {get; set;}
 
     }
 }

@@ -1,0 +1,8 @@
+<p>show-files works!</p>
+<input type="submit" (click)="onsubmit()"/>
+<div *ngFor="let item of fileList">
+  <!--<a (click)="showFileContent({{item.fileName}})">{{item.fileName}}</a>-->
+  <a  (click)="showFileContent(item.fileName)">{{item.fileName}}</a> 
+</div>
+
+

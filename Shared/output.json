@@ -1,0 +1,13 @@
+{
+  "DeveloperName": "string",
+  "FileData": [
+    {
+      "Machine": "string",
+      "JobName": "string",
+      "JobID": "string"
+    }
+  ],
+  "timeStamp": "string",
+  "timeZone": 0,
+  "userInfo": "string"
+}
